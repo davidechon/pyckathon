@@ -45,15 +45,58 @@ import pyodide  #libreria per pyscript
 import js       #libreria per javascript
 from utils import Utils #libreria per utilizzare funzioni JS
 
+
+
 custom_utils = Utils(pyodide, js) #istanza della libreria - ripensate all'esercizio di PHP con Movie ;)
 
 #---------------------------------------ELEMENTI DAL DOM------------------------------------------------------
 
 # questi elementi sono già stati catturati per te, 
 # ti serviranno per prendere il valore inserito e catturare l'evento di invio
+usedLetters = []
+correctLetters = []
 
 user_letter = custom_utils.getHtmlElement("user-letter")
 add_letter_btn = custom_utils.getHtmlElement("add-letter-btn")
+
+def split(word):
+    return[char for char in word]
+words = ['mattonella', 'gattino', 'pazzo']
+selected_words = random.choice(words)
+lettersOfWord = split(selected_words)
+print(lettersOfWord)
+
+errors = 0  
+
+def takeValue(valore):
+    global errors
+    maxErrors = 5
+
+    valore = custom_utils.getHtmlElement("user-letter").value   
+    custom_utils.writeToConsole(valore)
+
+    for lettera in lettersOfWord:
+        if valore == lettera:
+            correctLetters.append(valore)
+
+    if user_letter.value in lettersOfWord:
+        usedLetters.append(user_letter.value)
+        
+    else: 
+        usedLetters.append(user_letter.value)
+        if errors < maxErrors:
+            errors += 1
+    if errors == 5 :
+        custom_utils.removeOnClickEventFromHtmlElement(add_letter_btn)
+        custom_utils.disableInputElement(user_letter)
+
+    custom_utils.writeToConsole(usedLetters)        
+
+
+custom_utils.addOnClickEventToHtmlElement(add_letter_btn, takeValue)
+custom_utils.emptyInputElement(user_letter)
+
+custom_utils.addKeyupEventToHtmlElement(user_letter, takeValue)
 
 # questo elemento conterrà il testo segnaposto per la parola da indovinare
 word_html_container = custom_utils.getHtmlElement('word')
@@ -73,12 +116,15 @@ def main():
     global already_guessed
     global limit
 
-    
-    words = ['matto', 'gatto', 'pazzo'] # array con le parole da indovinare
+# array con le parole da indovinare
 
-    # inserisco la stringa segnaposto dentro il contenitore HTML
-    display = "___" # da modificare
-    custom_utils.writeToHtmlElement(word_html_container, '%s' % (display))
+# inserisco la stringa segnaposto dentro il contenitore HTML
+display = "_" # da modificare
+display = display*(len(selected_words))
+    
+
+
+custom_utils.writeToHtmlElement(word_html_container, '%s' % (display))
 
 
 main()
